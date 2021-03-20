@@ -28,7 +28,7 @@ https://remix.ethereum.org
 
 ## Resources for Learning
 
-- [web3js]https://web3js.readthedocs.io/en/v1.2.11/index.html) - the Web3 documentation
+- [web3js](https://web3js.readthedocs.io/en/v1.2.11/index.html) - the Web3 documentation
 - [Infura](https://infura.io/docs) - The Infura documentation
 
 ## License
