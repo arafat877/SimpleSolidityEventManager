@@ -1,0 +1,206 @@
+<html>
+
+<head>
+
+    <title>Web3 Ropsten</title>
+    
+    
+    <meta charset="UTF-8">
+
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+	
+    <script src="web3.min.js" type="text/javascript"></script>
+	
+
+</head>
+
+<body>
+
+	<div class="jumbotron jumbotron-fluid">
+		<div class="container">
+			<h1 class="display-4">Simple Ethereum event Example</h1>
+			<p class="lead" id="msg">Hello</p>
+		</div>
+	</div>
+	
+    <div class="container">
+	
+		<div class="row border-bottom" >
+			<div class="col-6">
+				<h3><label>Set Value : </label></h3>
+			</div>
+            <div class="col-6">
+				<input type="text" id="_value"></input>
+			</div>
+		</div>
+		
+		<div class="row border-bottom" >
+			<div class="col-6">
+				<h3></h3>
+			</div>
+			<div class="col-6">
+				<button type="button" class="btn btn-dark" id="connectButton" onclick="save()">Send</button>
+			</div>
+		</div>
+		
+		<div class="row border-bottom" >
+			<div class="col-6">
+				<h3>Value in the Blockchain is : </h3>
+			</div>
+			<div class="col-6">
+				<label id="ShowValue">0</label>
+			</div>
+		</div>
+	        
+    </div>
+
+    <div class="container">
+      <div class="row">
+        Footer
+      </div>
+    </div>
+  	
+	<script>
+		const alchemyURL  = "https://eth-ropsten.alchemyapi.io/v2/7PpxQIhXLcalj1Iw1b6y74ucGWwx59WY";
+		const infuraURL   = "wss://ropsten.infura.io/ws/v3/700fb31a003048d2901ca3c385d608e5";
+
+        //var web3 = new Web3(new Web3.providers.HttpProvider(infuraURL));
+		var web3 = new Web3(new Web3.providers.WebsocketProvider(infuraURL));
+		
+		
+		const account  = web3.eth.accounts.privateKeyToAccount("00926b3e98ae340b62a4406547adcd933a577966772330ae39a02c9198f5308a");
+        
+		
+		
+        if(Object.keys(web3).length === 0) {
+            show("Error : could not connect to Ropsten testnet");
+        } else { 
+            show("successfully connected to Ropsten testnet");
+        }
+        
+        web3.eth.net.isListening()
+            .then(() => console.log('web3 is connected'))
+            .catch(e => console.log('Wow. Something went wrong'));
+        const abi=
+[
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "_value",
+				"type": "uint256"
+			}
+		],
+		"name": "DataStored",
+		"type": "event"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "getValue",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_value",
+				"type": "uint256"
+			}
+		],
+		"name": "setValue",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	}
+];
+
+        
+	const contract_Address="0xA935E30527CE58773d0D0d2F5C91cfc3f2117B4c";
+    const contract = new web3.eth.Contract(abi, contract_Address);
+	
+	
+    contract.methods.getValue().call().then(console.log);
+        
+	contract.methods.getValue().call().then(function(result){
+    		document.getElementById("ShowValue").innerHTML = result;
+	});
+
+	async function save() {
+		var vl = document.getElementById("_value").value;
+	    show("Value sent to Blockchain is : " + vl);
+		
+		const receipt  = await send(web3, account, contract.methods.setValue(vl));
+		console.log(receipt);
+		
+		contract.events.DataStored({
+			//filter: {_value: 111}, // Using an array means OR: e.g. 20 or 23
+			fromBlock: 0,
+			toBlock: "latest"
+		}, function(error, event){ console.log(event); })
+		.on("connected", function(subscriptionId){
+			console.log("connected " + subscriptionId);
+		})
+		.on('data', function(event){
+			//console.log("data => " + String(event)); // same results as the optional callback above
+			for (const property in event) {
+				if(property == "returnValues") {
+					//console.log(property + " => " + event[property]);
+					var ppIndex = event[property];
+					for (const pp in ppIndex) {
+						if(pp == '_value') {
+							show("The Smart Contract has triggred an EVENT with a value : " + ppIndex[pp]);
+						}
+						//console.log(typeof pp);
+						//console.log(pp + " => " + ppIndex[pp]);
+					}
+				}
+				//console.log(property + " => " + event[property]);
+			}
+		})
+		.on('changed', function(event){
+			console.log("changed " + event);// remove event from local database
+		})
+		.on('error', function(error, receipt) { // If the transaction was rejected by the network with a receipt, the second parameter will be the receipt.
+			console.log("error " + event);
+		});
+
+	}
+	function show(message) {
+		//message += message + "<br>";
+		document.getElementById("msg").innerHTML = message;
+	}
+	
+	
+	async function send(web3, account, transaction, value = 0) {
+		const options = {
+			to      : transaction._parent._address,
+			data    : transaction.encodeABI(),
+			gas     : await transaction.estimateGas({from: account.address}),
+			gasPrice: await web3.eth.getGasPrice(),
+			value   : value
+		};
+		const signed  = await web3.eth.accounts.signTransaction(options, account.privateKey);
+		const receipt = await web3.eth.sendSignedTransaction(signed.rawTransaction);
+		return receipt;
+	}
+        
+    </script>
+
+</body>
+
+</html>
