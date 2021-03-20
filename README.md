@@ -1,44 +1,35 @@
-# electron-quick-start
+# SimpleSolidityEventManager
 
-**Clone and run for a quick way to see Electron in action.**
+**Clone and run for a quick way to see SimpleSolidityEventManager in action.**
 
-This is a minimal Electron application based on the [Quick Start Guide](https://electronjs.org/docs/tutorial/quick-start) within the Electron documentation.
+This is a minimal HTML/JavaScript application based on the [Web3](https://web3js.readthedocs.io/en/v1.2.11/index.html) within the Web3 documentation.
 
-**Use this app along with the [Electron API Demos](https://electronjs.org/#get-started) app for API code examples to help you get started.**
+A basic SimpleSolidityEventManager application needs just these files:
 
-A basic Electron application needs just these files:
-
-- `package.json` - Points to the app's main file and lists its details and dependencies.
-- `main.js` - Starts the app and creates a browser window to render HTML. This is the app's **main process**.
-- `index.html` - A web page to render. This is the app's **renderer process**.
-
-You can learn more about each of these components within the [Quick Start Guide](https://electronjs.org/docs/tutorial/quick-start).
-
+- `contract/MyContract.sol` - A basic Smart Contract written by Solidity.
+- `index.html` - A web page to render.
+- 
 ## To Use
 
-To clone and run this repository you'll need [Git](https://git-scm.com) and [Node.js](https://nodejs.org/en/download/) (which comes with [npm](http://npmjs.com)) installed on your computer. From your command line:
+To run this application, you must to :
 
 ```bash
-# Clone this repository
-git clone https://github.com/electron/electron-quick-start
-# Go into the repository
-cd electron-quick-start
-# Install dependencies
-npm install
-# Run the app
-npm start
+# Create an account in Infura, create an new projet, and then get the wss API_KEY at :
+https://infura.io
+# Download and install the MetaMask extention for FireFox(that I have used), and then create an account at :
+https://addons.mozilla.org/en-US/firefox/addon/ether-metamask/
+# Copy/Paste the Smart Contract located in the "contract" folder of this repository, in the Remix at :
+https://remix.ethereum.org
+# Choose "Inject Web3" in the ENVIRONMENT drop down list, a MetaMask pop-up will be shown asking for a confirmation
+# Compile/Deploy the Smart Contract, get the ABI/SmartContract Address, put them in the "index.html"
+# If you want simply test with my own datas, just run "index.html" in the browser
+# Enjoy
 ```
 
-Note: If you're using Linux Bash for Windows, [see this guide](https://www.howtogeek.com/261575/how-to-run-graphical-linux-desktop-applications-from-windows-10s-bash-shell/) or use `node` from the command prompt.
+## Resources for Learning
 
-## Resources for Learning Electron
-
-- [electronjs.org/docs](https://electronjs.org/docs) - all of Electron's documentation
-- [electronjs.org/community#boilerplates](https://electronjs.org/community#boilerplates) - sample starter apps created by the community
-- [electron/electron-quick-start](https://github.com/electron/electron-quick-start) - a very basic starter Electron app
-- [electron/simple-samples](https://github.com/electron/simple-samples) - small applications with ideas for taking them further
-- [electron/electron-api-demos](https://github.com/electron/electron-api-demos) - an Electron app that teaches you how to use Electron
-- [hokein/electron-sample-apps](https://github.com/hokein/electron-sample-apps) - small demo apps for the various Electron APIs
+- [web3js]https://web3js.readthedocs.io/en/v1.2.11/index.html) - the Web3 documentation
+- [Infura](https://infura.io/docs) - The Infura documentation
 
 ## License
 
